@@ -7,7 +7,8 @@ import os
 
 from dotenv import load_dotenv
 
-load_dotenv()
+# utf-8-sig: tolera el BOM que a veces agrega el Bloc de notas de Windows
+load_dotenv(encoding="utf-8-sig", override=True)
 
 
 class Config:
