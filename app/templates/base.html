@@ -11,10 +11,11 @@
   <header class="topbar">
     <a class="brand" href="{{ url_for('main.index') }}"><span class="logo">◆</span> GameGraph</a>
     <nav>
-      <a href="{{ url_for('main.index') }}">Inicio</a>
-      <a href="{{ url_for('players.list_players') }}">Jugadores</a>
-      <a href="{{ url_for('games.list_games') }}">Videojuegos</a>
-      <a href="{{ url_for('main.paths') }}">Caminos</a>
+      {% set here = request.path %}
+      <a href="{{ url_for('main.index') }}" class="{{ 'active' if here == '/' }}">Inicio</a>
+      <a href="{{ url_for('players.list_players') }}" class="{{ 'active' if here.startswith('/jugadores') or here.startswith('/grafo') }}">Jugadores</a>
+      <a href="{{ url_for('games.list_games') }}" class="{{ 'active' if here.startswith('/juegos') }}">Videojuegos</a>
+      <a href="{{ url_for('main.paths') }}" class="{{ 'active' if here.startswith('/caminos') }}">Caminos</a>
     </nav>
   </header>
 
@@ -27,9 +28,35 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="footer">
-    <span class="dot"></span>
-    Conectado a <strong>{{ server.address or '—' }}</strong> · {{ server.agent or '' }} · Neo4j AuraDB (driver oficial de Python)
+  <footer class="site-footer">
+    <div class="footer-cols">
+      <div>
+        <a class="brand" href="{{ url_for('main.index') }}"><span class="logo">◆</span> GameGraph</a>
+        <p class="muted">Recomendador de videojuegos sobre una base de datos de grafo en la nube.
+           Proyecto de Bases de Datos NoSQL.</p>
+      </div>
+      <div>
+        <h4>Explorar</h4>
+        <a href="{{ url_for('players.list_players') }}">Jugadores</a>
+        <a href="{{ url_for('games.list_games') }}">Videojuegos</a>
+        <a href="{{ url_for('main.paths') }}">Caminos</a>
+      </div>
+      <div>
+        <h4>Tecnología</h4>
+        <span>Neo4j AuraDB · Cypher</span>
+        <span>Python · Flask</span>
+        <span>Driver oficial <code>neo4j</code></span>
+      </div>
+      <div>
+        <h4>Proyecto</h4>
+        <a href="https://github.com/saimonetii/neo4j-videojuegos" target="_blank" rel="noopener">Código en GitHub ›</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="dot"></span>
+      Conectado a <strong>{{ server.address or '—' }}</strong> · {{ server.agent or '' }}
+      {% if server.database %} · base <strong>{{ server.database }}</strong>{% endif %}
+    </div>
   </footer>
   {% block scripts %}{% endblock %}
 </body>

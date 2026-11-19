@@ -2,7 +2,7 @@
 {% from "_macros.html" import cover, page_hero %}
 {% block title %}Videojuegos{% endblock %}
 {% block content %}
-{% call page_hero('Videojuegos', 'Cada juego es un nodo :Game conectado a sus géneros, plataformas y estudio. Filtra o agrega uno nuevo.', games|map(attribute='image')|list|wall) %}
+{% call page_hero('Videojuegos', 'Cada juego es un nodo :Game conectado a sus géneros, plataformas y estudio. Filtra o agrega uno nuevo.', ['https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/374320/library_hero.jpg'], 'single sharp') %}
   <div class="actions center">
     <a class="btn" href="{{ url_for('games.create') }}">+ Nuevo juego</a>
   </div>
@@ -22,10 +22,14 @@
   {% if q or genre or platform %}<a class="link" href="{{ url_for('games.list_games') }}">Limpiar</a>{% endif %}
 </form>
 
+<p class="results muted">{{ games|length }} juego(s){% if genre %} · {{ genre }}{% endif %}{% if platform %} · {{ platform }}{% endif %}{% if q %} · “{{ q }}”{% endif %}</p>
 <div class="game-grid">
   {% for g in games %}
     <a class="game" href="{{ url_for('games.detail', game_id=g.id) }}">
-      {{ cover(g.title, g.image) }}
+      <div class="cover-wrap">
+        {{ cover(g.title, g.image) }}
+        {% if g.avgRating %}<span class="badge">★ {{ g.avgRating }}</span>{% endif %}
+      </div>
       <div class="info">
         <strong>{{ g.title }}</strong>
         <span class="muted">{{ g.year }}</span>

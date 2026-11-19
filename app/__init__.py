@@ -12,6 +12,13 @@ def create_app():
 
     db.init_driver()  # conecta a AuraDB al arrancar (falla rápido si hay error)
 
+    # Completa portadas faltantes o antiguas (no toca las editadas a mano)
+    from database.seed import sync_images
+    try:
+        sync_images(db)
+    except Exception as err:  # una portada nunca debe impedir que arranque la app
+        app.logger.warning("No se pudieron sincronizar portadas: %s", err)
+
     from .routes.games import bp as games_bp
     from .routes.main import bp as main_bp
     from .routes.players import bp as players_bp

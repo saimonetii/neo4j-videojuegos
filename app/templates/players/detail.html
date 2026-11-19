@@ -56,7 +56,7 @@
       <tbody>
       {% for g in data.played %}
         <tr>
-          <td><a href="{{ url_for('games.detail', game_id=g.id) }}">{{ g.title }}</a></td>
+          <td><a class="with-thumb" href="{{ url_for('games.detail', game_id=g.id) }}">{% if g.image %}<img class="thumb" src="{{ g.image }}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">{% endif %}{{ g.title }}</a></td>
           <td class="stars">{{ '★' * g.rating }}<span class="off">{{ '★' * (5 - g.rating) }}</span></td>
           <td>{{ g.hours }}</td>
           <td>

@@ -69,13 +69,36 @@ STEAM_HEADER = "https://shared.akamai.steamstatic.com/store_item_assets/steam/ap
 # Juegos que no están en Steam: portada o logo publicado en Wikipedia/Wikimedia.
 OTHER_IMAGES = {
     "minecraft": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Caves_%26_Cliffs_II_-_Alex_%26_Steve_I.png/500px-Caves_%26_Cliffs_II_-_Alex_%26_Steve_I.png",
-    "valorant": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Valorant_logo_-_pink_color_version.svg/960px-Valorant_logo_-_pink_color_version.svg.png",
-    "fortnite": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/FortniteLogo.svg/500px-FortniteLogo.svg.png",
-    "league-of-legends": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/League_of_Legends_2019_vector.svg/960px-League_of_Legends_2019_vector.svg.png",
+    # Arte oficial publicado en la Epic Games Store
+    "valorant": "https://cdn1.epicgames.com/offer/cbd5b3d310a54b12bf3fe8c41994174f/EGS_VALORANT_RiotGames_S1_2560x1440-3f7a97d6442c4dd8bab8544872738fc0?resize=1&w=640&h=360&quality=medium",
+    "fortnite": "https://cdn1.epicgames.com/offer/fn/FNBR_43-00_MSEE_KeyArt_FN_Logo_EGS_Launcher_Blade_2560x1440_2560x1440-b575b2bd2d0d4892b520b4262617de93?resize=1&w=640&h=360&quality=medium",
+    "league-of-legends": "https://cdn1.epicgames.com/offer/24b9b5e323bc40eea252a10cdd3b2f10/EGS_LeagueofLegends_RiotGames_S1_2560x1440-47eb328eac5ddd63ebd096ded7d0d5ab?resize=1&w=640&h=360&quality=medium",
     "zelda-totk": "https://upload.wikimedia.org/wikipedia/en/f/fb/The_Legend_of_Zelda_Tears_of_the_Kingdom_cover.jpg",
     "mario-kart-8": "https://upload.wikimedia.org/wikipedia/en/b/b5/MarioKart8Boxart.jpg",
     "smash-ultimate": "https://upload.wikimedia.org/wikipedia/en/5/50/Super_Smash_Bros._Ultimate.jpg",
 }
+
+
+# Portadas de versiones anteriores del proyecto (se reemplazan al iniciar la app)
+OLD_IMAGES = [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Valorant_logo_-_pink_color_version.svg/960px-Valorant_logo_-_pink_color_version.svg.png",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/FortniteLogo.svg/500px-FortniteLogo.svg.png",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/League_of_Legends_2019_vector.svg/960px-League_of_Legends_2019_vector.svg.png",
+]
+
+# Actualiza portadas faltantes o antiguas sin tocar las que el usuario cambió a mano
+SYNC_IMAGES = """
+UNWIND $rows AS row
+MATCH (g:Game {id: row.id})
+WHERE g.image IS NULL OR g.image IN $old
+SET g.image = row.image
+RETURN count(g) AS updated
+"""
+
+
+def sync_images(db):
+    rows = [{"id": g[0], "image": image_for(g[0])} for g in GAMES if image_for(g[0])]
+    return db.write(SYNC_IMAGES, rows=rows, old=OLD_IMAGES)[0]["updated"]
 
 
 def image_for(game_id):

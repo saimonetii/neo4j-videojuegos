@@ -197,3 +197,57 @@ html, body { overflow-x: hidden; }
 .player-card .meta { display: block; color: var(--accent-2); font-size: .8rem; font-weight: 700; margin-top: .3rem; }
 .form-card { position: sticky; top: 80px; }
 .filters-bar { margin-top: 0; }
+
+/* ------------------------------------------------------------------ */
+/* Detalles                                                            */
+/* ------------------------------------------------------------------ */
+/* Navegación: página actual subrayada en rojo */
+.topbar nav a { position: relative; padding: .3rem 0; }
+.topbar nav a.active { color: var(--text); }
+.topbar nav a.active::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px;
+                              height: 3px; background: var(--accent); }
+
+/* Encabezado con una sola imagen nítida (Dark Souls III en Videojuegos) */
+.page-hero.sharp .wall img { filter: none; object-position: center 30%; }
+.page-hero.sharp .wall { opacity: .75; }
+
+/* Insignia de calificación sobre la portada + zoom suave al pasar el mouse */
+.cover-wrap { position: relative; overflow: hidden; }
+.cover img { transition: transform .35s ease; }
+.game:hover .cover img, .tile:hover .cover img, .player-card:hover .cover img { transform: scale(1.06); }
+.badge { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,.78); color: var(--star);
+         font-weight: 800; font-size: .8rem; padding: .2rem .5rem; border-left: 3px solid var(--accent); }
+.results { margin: -.4rem 0 .8rem; font-size: .85rem; }
+
+/* Cómo funciona */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 1rem; }
+.step { background: var(--panel); padding: 1.4rem 1.3rem; border-top: 3px solid var(--accent); }
+.step svg { width: 44px; height: 44px; color: var(--accent); }
+.step h3 { margin: .6rem 0 .3rem; font-size: 1.05rem; }
+.step p { color: var(--muted); margin: 0; font-size: .92rem; line-height: 1.5; }
+@media (max-width: 800px) { .steps { grid-template-columns: 1fr; } }
+
+/* Miniaturas en la tabla de juegos jugados */
+.with-thumb { display: inline-flex; align-items: center; gap: .6rem; }
+.thumb { width: 64px; aspect-ratio: 460 / 215; object-fit: cover; flex-shrink: 0; }
+
+/* Pie de página */
+.site-footer { border-top: 1px solid var(--line); background: #070707; margin-top: 2rem; }
+.footer-cols { max-width: 1180px; margin: 0 auto; padding: 2.2rem 2rem 1.4rem; display: grid;
+               grid-template-columns: 2fr 1fr 1fr 1fr; gap: 1.5rem; }
+.footer-cols h4 { margin: 0 0 .7rem; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.footer-cols a, .footer-cols span { display: block; color: var(--text); font-size: .9rem; margin: .35rem 0; }
+.footer-cols a:hover { color: var(--accent); text-decoration: none; }
+.footer-cols p { font-size: .88rem; line-height: 1.55; max-width: 320px; }
+.footer-bottom { text-align: center; color: var(--muted); font-size: .8rem; padding: .9rem; border-top: 1px solid var(--line); }
+.footer-bottom .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ok);
+                      margin-right: 6px; box-shadow: 0 0 8px var(--ok); }
+@media (max-width: 800px) { .footer-cols { grid-template-columns: 1fr 1fr; } }
+
+/* Aparición suave de tarjetas */
+@media (prefers-reduced-motion: no-preference) {
+  .game, .tile, .player-card, .step, .card { animation: rise .45s ease backwards; }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+}
+.footer-cols .brand { display: inline-flex; align-items: center; gap: .4rem; font-size: 1.15rem; font-weight: 800; }
+.footer-cols .brand .logo { display: inline; margin: 0; color: var(--accent); font-size: 1.15rem; }
