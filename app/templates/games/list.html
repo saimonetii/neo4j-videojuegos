@@ -1,13 +1,14 @@
 {% extends "base.html" %}
-{% from "_macros.html" import cover %}
+{% from "_macros.html" import cover, page_hero %}
 {% block title %}Videojuegos{% endblock %}
 {% block content %}
-<div class="page-head">
-  <h1>Videojuegos</h1>
-  <a class="btn" href="{{ url_for('games.create') }}">+ Nuevo juego</a>
-</div>
+{% call page_hero('Videojuegos', 'Cada juego es un nodo :Game conectado a sus géneros, plataformas y estudio. Filtra o agrega uno nuevo.', games|map(attribute='image')|list|wall) %}
+  <div class="actions center">
+    <a class="btn" href="{{ url_for('games.create') }}">+ Nuevo juego</a>
+  </div>
+{% endcall %}
 
-<form method="get" class="card form inline filters">
+<form method="get" class="card form inline filters filters-bar">
   <input name="q" value="{{ q or '' }}" placeholder="Buscar por título…">
   <select name="genre">
     <option value="">Todos los géneros</option>

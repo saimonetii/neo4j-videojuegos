@@ -75,6 +75,10 @@ LIMIT 18
 """
 
 
+def covers():
+    return db.read(COVERS)
+
+
 def shortest_path(source, target, mode="social"):
     query = SHORTEST_PATH_ANY if mode == "any" else SHORTEST_PATH_SOCIAL
     rows = db.read(query, source=source, target=target)

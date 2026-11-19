@@ -11,8 +11,9 @@ RETURN p.username AS username
 LIST_PLAYERS = """
 MATCH (p:Player)
 OPTIONAL MATCH (p)-[r:PLAYED]->(:Game)
-RETURN p.username AS username, p.name AS name, p.country AS country,
-       count(r) AS games
+WITH p, count(r) AS games
+RETURN p.username AS username, p.name AS name, p.country AS country, games,
+       [(p)-[pl:PLAYED]->(g:Game) WHERE g.image IS NOT NULL | g.image][0] AS cover
 ORDER BY name
 """
 
@@ -20,7 +21,7 @@ GET_PLAYER = """
 MATCH (p:Player {username: $username})
 RETURN p {.username, .name, .country} AS player,
        [(p)-[r:PLAYED]->(g:Game) |
-           {id: g.id, title: g.title, rating: r.rating, hours: r.hours}] AS played,
+           {id: g.id, title: g.title, image: g.image, rating: r.rating, hours: r.hours}] AS played,
        [(p)-[:FRIEND_OF]-(f:Player) | f {.username, .name}] AS friends
 """
 

@@ -1,14 +1,10 @@
 <!doctype html>
-<html lang="es" data-theme="nube">
+<html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}GameGraph{% endblock %} · Recomendador de videojuegos</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script>
-    // Tema guardado por el usuario (solo preferencia visual del navegador)
-    try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
-  </script>
   {% block head %}{% endblock %}
 </head>
 <body>
@@ -19,14 +15,6 @@
       <a href="{{ url_for('players.list_players') }}">Jugadores</a>
       <a href="{{ url_for('games.list_games') }}">Videojuegos</a>
       <a href="{{ url_for('main.paths') }}">Caminos</a>
-      <select id="theme-picker" class="theme-picker" title="Tema de color">
-        <option value="nube">Nube</option>
-        <option value="consola">Consola</option>
-        <option value="claro">Claro</option>
-        <option value="retro">Retro</option>
-        <option value="oceano">Océano</option>
-        <option value="violeta">Violeta</option>
-      </select>
     </nav>
   </header>
 
@@ -43,15 +31,6 @@
     <span class="dot"></span>
     Conectado a <strong>{{ server.address or '—' }}</strong> · {{ server.agent or '' }} · Neo4j AuraDB (driver oficial de Python)
   </footer>
-  <script>
-    const picker = document.getElementById('theme-picker');
-    picker.value = document.documentElement.dataset.theme;
-    picker.addEventListener('change', () => {
-      document.documentElement.dataset.theme = picker.value;
-      try { localStorage.setItem('theme', picker.value); } catch (e) {}
-      document.dispatchEvent(new Event('themechange'));
-    });
-  </script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

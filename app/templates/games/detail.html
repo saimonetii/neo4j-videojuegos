@@ -1,22 +1,17 @@
 {% extends "base.html" %}
-{% from "_macros.html" import cover %}
+{% from "_macros.html" import cover, page_hero %}
 {% set g = data.game %}
 {% block title %}{{ g.title }}{% endblock %}
 {% block content %}
-<div class="page-head">
-  <div>
-    <h1>{{ g.title }} <span class="muted">({{ g.year }})</span></h1>
-    <p class="muted">Desarrollado por {{ data.developers|join(', ') }}
-      {% if data.avgRating %} · <span class="stars">★</span> {{ data.avgRating }} de {{ data.players|length }} jugador(es){% endif %}</p>
-  </div>
-  <div class="actions">
+{% call page_hero(g.title, g.year ~ ' · ' ~ data.developers|join(', ') ~ (' · ★ ' ~ data.avgRating ~ ' de ' ~ data.players|length ~ ' jugador(es)' if data.avgRating else ''), [g.image] if g.image else [], 'single') %}
+  <div class="actions center">
     <a class="btn ghost" href="{{ url_for('games.edit', game_id=g.id) }}">Editar</a>
     <form method="post" action="{{ url_for('games.delete', game_id=g.id) }}"
           onsubmit='return confirm({{ ("¿Eliminar " ~ g.title ~ " y todas sus relaciones?")|tojson }});'>
       <button class="btn danger" type="submit">Eliminar</button>
     </form>
   </div>
-</div>
+{% endcall %}
 
 <div class="grid two wide-left">
   <section class="card">

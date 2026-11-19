@@ -1,21 +1,18 @@
 {% extends "base.html" %}
+{% from "_macros.html" import page_hero %}
 {% set p = data.player %}
 {% block title %}{{ p.name }}{% endblock %}
 {% block content %}
-<div class="page-head">
-  <div>
-    <h1>{{ p.name }} <span class="muted">@{{ p.username }}{% if p.country %} · {{ p.country }}{% endif %}</span></h1>
-    <p class="muted">{{ data.played|length }} juegos · {{ data.friends|length }} amigos</p>
-  </div>
-  <div class="actions">
-    <a class="btn ghost" href="{{ url_for('main.graph_view', username=p.username) }}">Ver su grafo</a>
+{% call page_hero(p.name, '@' ~ p.username ~ (' · ' ~ p.country if p.country else '') ~ ' · ' ~ data.played|length ~ ' juego(s) · ' ~ data.friends|length ~ ' amigo(s)', data.played|map(attribute='image')|list|wall) %}
+  <div class="actions center">
+    <a class="btn" href="{{ url_for('main.graph_view', username=p.username) }}">Ver su grafo</a>
     <a class="btn ghost" href="{{ url_for('players.edit', username=p.username) }}">Editar</a>
     <form method="post" action="{{ url_for('players.delete', username=p.username) }}"
           onsubmit='return confirm({{ ("¿Eliminar " ~ p.name ~ " y todas sus relaciones?")|tojson }});'>
       <button class="btn danger" type="submit">Eliminar</button>
     </form>
   </div>
-</div>
+{% endcall %}
 
 <h2 class="section">Recomendado para ti</h2>
 <div class="grid three">

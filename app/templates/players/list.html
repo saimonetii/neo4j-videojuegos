@@ -1,28 +1,29 @@
 {% extends "base.html" %}
+{% from "_macros.html" import cover, page_hero %}
 {% block title %}Jugadores{% endblock %}
 {% block content %}
-<h1>Jugadores</h1>
+{{ page_hero('Jugadores', 'Cada jugador es un nodo :Player. Sus partidas y amistades son las relaciones que el grafo recorre para recomendar.', covers|wall) }}
+
 <div class="grid two wide-left">
-  <section class="card">
-    <table>
-      <thead><tr><th>Nombre</th><th>Usuario</th><th>País</th><th>Juegos</th><th></th></tr></thead>
-      <tbody>
+  <section>
+    <div class="player-grid">
       {% for p in players %}
-        <tr>
-          <td><a href="{{ url_for('players.detail', username=p.username) }}">{{ p.name }}</a></td>
-          <td class="muted">@{{ p.username }}</td>
-          <td>{{ p.country or '' }}</td>
-          <td>{{ p.games }}</td>
-          <td><a class="link" href="{{ url_for('main.graph_view', username=p.username) }}">grafo</a></td>
-        </tr>
+        <a class="player-card" href="{{ url_for('players.detail', username=p.username) }}">
+          {{ cover(p.name, p.cover) }}
+          <div class="who">
+            <span class="avatar">{{ p.name[:1] }}</span>
+            <strong>{{ p.name }}</strong>
+            <span class="muted">@{{ p.username }}{% if p.country %} · {{ p.country }}{% endif %}</span>
+            <span class="meta">{{ p.games }} juego(s)</span>
+          </div>
+        </a>
       {% else %}
-        <tr><td colspan="5" class="muted">No hay jugadores.</td></tr>
+        <p class="muted">No hay jugadores.</p>
       {% endfor %}
-      </tbody>
-    </table>
+    </div>
   </section>
 
-  <section class="card">
+  <section class="card form-card">
     <h2>Nuevo jugador</h2>
     <form method="post" class="form">
       <label>Usuario <input name="username" required pattern="[a-z0-9_]{3,20}" placeholder="ej. samuel_c"></label>

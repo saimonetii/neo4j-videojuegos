@@ -4,7 +4,7 @@ import re
 from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from neo4j.exceptions import ConstraintError
 
-from ..repositories import games, players, recommendations
+from ..repositories import games, graph, players, recommendations
 
 bp = Blueprint("players", __name__, url_prefix="/jugadores")
 
@@ -31,7 +31,8 @@ def list_players():
                 return redirect(url_for("players.detail", username=username))
             except ConstraintError:
                 flash(f"El usuario «{username}» ya existe (restricción UNIQUE).", "error")
-    return render_template("players/list.html", players=players.list_players())
+    return render_template("players/list.html", players=players.list_players(),
+                           covers=[c["image"] for c in graph.covers()])
 
 
 @bp.route("/<username>")

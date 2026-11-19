@@ -20,6 +20,12 @@ def create_app():
     app.register_blueprint(players_bp)
     app.register_blueprint(games_bp)
 
+    @app.template_filter("wall")
+    def wall_filter(images, size=18):
+        """Repite las portadas (sin vacíos) hasta llenar el muro del encabezado."""
+        images = [img for img in images if img]
+        return (images * (size // len(images) + 1))[:size] if images else []
+
     @app.context_processor
     def inject_server():
         return {"server": db.server_info()}

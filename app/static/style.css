@@ -1,42 +1,10 @@
-/* Temas: se elige con el selector de la barra superior (data-theme en <html>) */
-:root, [data-theme="nube"] {
-  --bg: #000000; --glow: #000000; --panel: #111111; --panel-2: #1c1c1c; --line: #2b2b2b;
-  --text: #ffffff; --muted: #a7a7a7; --accent: #76b900; --accent-2: #8fd400; --on-accent: #000;
-  --link: #8fd400; --ok: #76b900; --err: #ff5a5a; --star: #76b900; --star-off: #333;
-  --n-me: #76b900; --n-player: #c8c8c8; --n-game: #3a8fd6; --n-genre: #f2c94c;
-  --font: "Arial", "Helvetica Neue", Helvetica, system-ui, sans-serif; --radius: 2px;
-}
-[data-theme="consola"] {
-  --bg: #111113; --glow: #3b0d10; --panel: #1b1b1f; --panel-2: #26262c; --line: #33333b;
-  --text: #f4f4f5; --muted: #a1a1aa; --accent: #e11d2a; --accent-2: #f59e0b; --on-accent: #fff;
-  --link: #fb7185; --ok: #22c55e; --err: #ef4444; --star: #fbbf24; --star-off: #3f3f46;
-  --n-me: #fbbf24; --n-player: #e11d2a; --n-game: #60a5fa; --n-genre: #22c55e;
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; --radius: 12px;
-}
-[data-theme="claro"] {
-  --bg: #f4f6fb; --glow: #dbeafe; --panel: #ffffff; --panel-2: #eef1f7; --line: #dfe3ec;
-  --text: #111827; --muted: #6b7280; --accent: #2563eb; --accent-2: #0891b2; --on-accent: #fff;
-  --link: #1d4ed8; --ok: #16a34a; --err: #dc2626; --star: #f59e0b; --star-off: #d1d5db;
-  --n-me: #f59e0b; --n-player: #2563eb; --n-game: #0891b2; --n-genre: #16a34a;
-}
-[data-theme="retro"] {
-  --bg: #0f380f; --glow: #306230; --panel: #1d4a1d; --panel-2: #306230; --line: #4d7a1f;
-  --text: #c4dc6c; --muted: #8bac0f; --accent: #9bbc0f; --accent-2: #8bac0f; --on-accent: #0f380f;
-  --link: #d6f07a; --ok: #9bbc0f; --err: #f0a03c; --star: #e8f87a; --star-off: #306230;
-  --n-me: #e8f87a; --n-player: #9bbc0f; --n-game: #5f8f1f; --n-genre: #c4dc6c;
-  --font: "Courier New", ui-monospace, monospace; --radius: 4px;
-}
-[data-theme="oceano"] {
-  --bg: #071a2b; --glow: #0c3b4f; --panel: #0d2538; --panel-2: #123149; --line: #1d4460;
-  --text: #e2f1f8; --muted: #8fb3c7; --accent: #14b8a6; --accent-2: #38bdf8; --on-accent: #04201d;
-  --link: #5eead4; --ok: #22c55e; --err: #f87171; --star: #fcd34d; --star-off: #1d4460;
-  --n-me: #fcd34d; --n-player: #14b8a6; --n-game: #38bdf8; --n-genre: #a3e635;
-}
-[data-theme="violeta"] {
-  --bg: #0b1020; --glow: #1e1b4b; --panel: #121a2f; --panel-2: #18223d; --line: #24304f;
-  --text: #e5e7eb; --muted: #94a3b8; --accent: #8b5cf6; --accent-2: #0ea5e9; --on-accent: #fff;
-  --link: #c4b5fd; --ok: #10b981; --err: #ef4444; --star: #f59e0b; --star-off: #334155;
-  --n-me: #f59e0b; --n-player: #8b5cf6; --n-game: #0ea5e9; --n-genre: #10b981;
+/* Tema único: negro con rojo, esquinas rectas (estilo "launcher" de juegos) */
+:root {
+  --bg: #000000; --glow: #000000; --panel: #111111; --panel-2: #1c1c1c; --line: #2a2a2a;
+  --text: #ffffff; --muted: #a7a7a7; --accent: #e3122c; --accent-2: #ff4d5e; --on-accent: #fff;
+  --link: #ff5a6a; --ok: #22c55e; --err: #ff5a5a; --star: #ffb020; --star-off: #333;
+  --n-me: #ffb020; --n-player: #e3122c; --n-game: #3a8fd6; --n-genre: #22c55e;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; --radius: 2px;
 }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: var(--font);
@@ -149,7 +117,6 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); bo
 .lg.me::before { background: var(--n-me); } .lg.player::before { background: var(--n-player); }
 .lg.game::before { background: var(--n-game); } .lg.genre::before { background: var(--n-genre); border-radius: 2px; }
 
-.theme-picker { margin-left: 1.4rem; padding: .3rem .5rem; font-size: .8rem; }
 .topbar nav { display: flex; align-items: center; flex-wrap: wrap; }
 
 /* ------------------------------------------------------------------ */
@@ -201,3 +168,32 @@ h1, h2, h3, .brand { letter-spacing: -.01em; }
 .game:hover { border-color: var(--accent); }
 .cover.banner { border-radius: var(--radius); }
 @media (max-width: 700px) { .wall { grid-template-columns: repeat(3, 1fr); } }
+
+/* ------------------------------------------------------------------ */
+/* Encabezados con muro de portadas en todas las páginas               */
+/* ------------------------------------------------------------------ */
+html, body { overflow-x: hidden; }
+* { scrollbar-color: var(--line) transparent; }
+.page-hero { min-height: 300px; margin-bottom: 1.5rem; }
+.page-hero .hero-content { padding: 2.4rem 1.5rem; }
+.page-hero .hero-content h1 { font-size: clamp(1.8rem, 4vw, 2.7rem); margin-bottom: .6rem; }
+.page-hero .hero-content p { margin-bottom: 1.2rem; }
+.page-hero.single .wall { inset: 0; grid-template-columns: 1fr; transform: none; opacity: .55; gap: 0; }
+.page-hero.single .wall img { height: 100%; aspect-ratio: auto; filter: blur(2px); }
+.page-hero.single .wall img ~ img { display: none; }
+.hero-content .actions { margin-top: .4rem; }
+
+/* Tarjetas de jugadores */
+.player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+.player-card { display: flex; flex-direction: column; background: var(--panel); border: 2px solid transparent;
+               color: var(--text); overflow: hidden; transition: border-color .15s, transform .15s; }
+.player-card:hover { border-color: var(--accent); transform: translateY(-3px); text-decoration: none; }
+.player-card .cover { border-radius: 0; font-size: 1.6rem; }
+.player-card .who { position: relative; padding: 0 .8rem .9rem; }
+.avatar { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-weight: 800;
+          font-size: 1.3rem; background: var(--accent); color: var(--on-accent); border: 3px solid var(--panel);
+          margin-top: -26px; margin-bottom: .4rem; position: relative; }
+.player-card strong { display: block; } .player-card .muted { font-size: .85rem; }
+.player-card .meta { display: block; color: var(--accent-2); font-size: .8rem; font-weight: 700; margin-top: .3rem; }
+.form-card { position: sticky; top: 80px; }
+.filters-bar { margin-top: 0; }

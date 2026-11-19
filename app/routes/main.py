@@ -26,6 +26,7 @@ def paths():
             if result is None:
                 error = "No existe un camino entre esos jugadores (dentro del límite de saltos)."
     return render_template("paths.html", players=all_players, source=source,
+                           covers=[c["image"] for c in graph.covers()],
                            target=target, mode=mode, result=result, error=error)
 
 

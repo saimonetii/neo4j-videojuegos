@@ -5,3 +5,18 @@
   {% if image %}<img src="{{ image }}" alt="{{ title }}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">{% endif %}
 </div>
 {%- endmacro %}
+
+
+{# Encabezado de página con muro de portadas detrás del título. #}
+{% macro page_hero(title, subtitle='', images=[], cls='') -%}
+<section class="hero-wall page-hero {{ cls }}">
+  <div class="wall" aria-hidden="true">
+    {% for src in images %}<img src="{{ src }}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">{% endfor %}
+  </div>
+  <div class="hero-content">
+    <h1>{{ title }}</h1>
+    {% if subtitle %}<p>{{ subtitle }}</p>{% endif %}
+    {% if caller is defined %}{{ caller() }}{% endif %}
+  </div>
+</section>
+{%- endmacro %}
