@@ -123,6 +123,10 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); bo
          background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
 .cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .cover.banner { margin-bottom: 1rem; }
+/* Logos con fondo transparente (archivos .svg.png): completos, sin recortar */
+.cover img[src*=".svg.png"] { object-fit: contain; padding: 8% 12%; }
+/* Cajas verticales: recorta desde arriba para que se vea el título */
+.cover img[src*="upload.wikimedia.org/wikipedia/en"] { object-position: center 20%; }
 .game .info { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
 .game .meta { color: var(--muted); font-size: .8rem; }
 

@@ -53,8 +53,8 @@ GAMES = [
     ("it-takes-two", "It Takes Two", 2021, "Hazelight Studios", ["Aventura", "Plataformas", "Cooperativo"], ["PC", "PS5", "Xbox Series", "Switch"], "Aventura cooperativa obligatoria para dos."),
 ]
 
-# Portadas: imagen "header" oficial de la tienda de Steam (los juegos que no
-# están en Steam quedan sin imagen y la página muestra la inicial del título).
+# Portadas: imagen "header" oficial de la tienda de Steam; para los que no están
+# en Steam, la imagen de Wikipedia. Si una URL falla, la página muestra la inicial.
 STEAM_APP_IDS = {
     "the-witcher-3": 292030, "elden-ring": 1245620, "dark-souls-3": 374320, "sekiro": 814380,
     "cyberpunk-2077": 1091500, "baldurs-gate-3": 1086940, "divinity-os2": 435150,
@@ -66,10 +66,21 @@ STEAM_APP_IDS = {
 }
 STEAM_HEADER = "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/{}/header.jpg"
 
+# Juegos que no están en Steam: portada o logo publicado en Wikipedia/Wikimedia.
+OTHER_IMAGES = {
+    "minecraft": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Caves_%26_Cliffs_II_-_Alex_%26_Steve_I.png/500px-Caves_%26_Cliffs_II_-_Alex_%26_Steve_I.png",
+    "valorant": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Valorant_logo_-_pink_color_version.svg/960px-Valorant_logo_-_pink_color_version.svg.png",
+    "fortnite": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/FortniteLogo.svg/500px-FortniteLogo.svg.png",
+    "league-of-legends": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/League_of_Legends_2019_vector.svg/960px-League_of_Legends_2019_vector.svg.png",
+    "zelda-totk": "https://upload.wikimedia.org/wikipedia/en/f/fb/The_Legend_of_Zelda_Tears_of_the_Kingdom_cover.jpg",
+    "mario-kart-8": "https://upload.wikimedia.org/wikipedia/en/b/b5/MarioKart8Boxart.jpg",
+    "smash-ultimate": "https://upload.wikimedia.org/wikipedia/en/5/50/Super_Smash_Bros._Ultimate.jpg",
+}
+
 
 def image_for(game_id):
     app_id = STEAM_APP_IDS.get(game_id)
-    return STEAM_HEADER.format(app_id) if app_id else None
+    return STEAM_HEADER.format(app_id) if app_id else OTHER_IMAGES.get(game_id)
 
 
 # (username, nombre, país)
