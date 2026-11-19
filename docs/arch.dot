@@ -1,0 +1,21 @@
+digraph G {
+  rankdir=TB; bgcolor="white"; fontname="Helvetica"; nodesep=0.5; ranksep=0.6;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, color="#475569", penwidth=1.2];
+  edge [fontname="Helvetica", fontsize=9, color="#475569"];
+  subgraph cluster_client { label="Cliente"; style="rounded,dashed"; color="#94a3b8"; fontsize=11;
+    browser [label="Navegador web\nHTML + CSS + vis-network", fillcolor="#ede9fe"]; }
+  subgraph cluster_backend { label="Backend (Python 3 · Flask)"; style="rounded,dashed"; color="#94a3b8"; fontsize=11;
+    routes [label="Blueprints / rutas\nroutes/*.py", fillcolor="#e0f2fe"];
+    repos [label="Repositorios\n(consultas Cypher)\nrepositories/*.py", fillcolor="#e0f2fe"];
+    dbm [label="db.py\nDriver singleton\nexecute_query()\nREAD / WRITE routing", fillcolor="#e0f2fe"];
+    env [label=".env\nNEO4J_URI\nNEO4J_USERNAME\nNEO4J_PASSWORD", shape=note, fillcolor="#fef3c7"];
+    routes -> repos -> dbm; {rank=same; repos; env} env -> dbm [style=dashed, label="config.py"]; }
+  sdk [label="SDK oficial\nneo4j (Python driver)\nprotocolo Bolt", fillcolor="#dcfce7"];
+  subgraph cluster_cloud { label="Nube (DaaS)"; style="rounded,filled"; fillcolor="#f8fafc"; color="#94a3b8"; fontsize=11;
+    aura [label="Neo4j AuraDB Free\nmotor de grafo nativo\nCypher", shape=cylinder, fillcolor="#d1fae5", height=1.1]; }
+  seed [label="database/seed.py\nschema.cypher", shape=note, fillcolor="#f1f5f9"];
+  browser -> routes [label="HTTP GET/POST"];
+  routes -> browser [label="HTML / JSON", style=dashed];
+  dbm -> sdk; sdk -> aura [label="neo4j+s://  (Bolt sobre TLS)", penwidth=1.6];
+  seed -> sdk [style=dashed];
+}

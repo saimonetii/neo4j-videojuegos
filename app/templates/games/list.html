@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Videojuegos{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Videojuegos</h1>
+  <a class="btn" href="{{ url_for('games.create') }}">+ Nuevo juego</a>
+</div>
+
+<form method="get" class="card form inline filters">
+  <input name="q" value="{{ q or '' }}" placeholder="Buscar por título…">
+  <select name="genre">
+    <option value="">Todos los géneros</option>
+    {% for g in catalog.Genre %}<option {% if g == genre %}selected{% endif %}>{{ g }}</option>{% endfor %}
+  </select>
+  <select name="platform">
+    <option value="">Todas las plataformas</option>
+    {% for pf in catalog.Platform %}<option {% if pf == platform %}selected{% endif %}>{{ pf }}</option>{% endfor %}
+  </select>
+  <button class="btn" type="submit">Filtrar</button>
+  {% if q or genre or platform %}<a class="link" href="{{ url_for('games.list_games') }}">Limpiar</a>{% endif %}
+</form>
+
+<div class="game-grid">
+  {% for g in games %}
+    <a class="game" href="{{ url_for('games.detail', game_id=g.id) }}">
+      <div class="cover">{{ g.title[:1] }}</div>
+      <div class="info">
+        <strong>{{ g.title }}</strong>
+        <span class="muted">{{ g.year }}</span>
+        <div class="tags">{% for ge in g.genres %}<span class="tag">{{ ge }}</span>{% endfor %}</div>
+        <span class="meta">{% if g.avgRating %}★ {{ g.avgRating }} · {% endif %}{{ g.players }} jugador(es)</span>
+      </div>
+    </a>
+  {% else %}
+    <p class="muted">No hay juegos con esos filtros.</p>
+  {% endfor %}
+</div>
+{% endblock %}

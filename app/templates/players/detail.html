@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% set p = data.player %}
+{% block title %}{{ p.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ p.name }} <span class="muted">@{{ p.username }}{% if p.country %} · {{ p.country }}{% endif %}</span></h1>
+    <p class="muted">{{ data.played|length }} juegos · {{ data.friends|length }} amigos</p>
+  </div>
+  <div class="actions">
+    <a class="btn ghost" href="{{ url_for('main.graph_view', username=p.username) }}">Ver su grafo</a>
+    <a class="btn ghost" href="{{ url_for('players.edit', username=p.username) }}">Editar</a>
+    <form method="post" action="{{ url_for('players.delete', username=p.username) }}"
+          onsubmit='return confirm({{ ("¿Eliminar " ~ p.name ~ " y todas sus relaciones?")|tojson }});'>
+      <button class="btn danger" type="submit">Eliminar</button>
+    </form>
+  </div>
+</div>
+
+<h2 class="section">Recomendado para ti</h2>
+<div class="grid three">
+  <section class="card rec">
+    <h3>Jugadores con gustos similares</h3>
+    <p class="hint">Filtrado colaborativo · 3 saltos</p>
+    <ol>
+    {% for r in recs.collaborative %}
+      <li><a href="{{ url_for('games.detail', game_id=r.id) }}">{{ r.title }}</a>
+          <small>score {{ r.score }} · por {{ r.because|join(', ') }}</small></li>
+    {% else %}<li class="muted">Califica más juegos para obtener recomendaciones.</li>{% endfor %}
+    </ol>
+  </section>
+  <section class="card rec">
+    <h3>Por tus géneros favoritos</h3>
+    <p class="hint">Basado en contenido · Genre</p>
+    <ol>
+    {% for r in recs.content %}
+      <li><a href="{{ url_for('games.detail', game_id=r.id) }}">{{ r.title }}</a>
+          <small>score {{ r.score }} · {{ r.genres|join(', ') }}</small></li>
+    {% else %}<li class="muted">Sin datos suficientes.</li>{% endfor %}
+    </ol>
+  </section>
+  <section class="card rec">
+    <h3>Lo que juegan tus amigos</h3>
+    <p class="hint">Social · FRIEND_OF → PLAYED</p>
+    <ol>
+    {% for r in recs.social %}
+      <li><a href="{{ url_for('games.detail', game_id=r.id) }}">{{ r.title }}</a>
+          <small>★ {{ r.avgRating }} · {{ r.byFriends|join(', ') }}</small></li>
+    {% else %}<li class="muted">Agrega amigos para ver esta sección.</li>{% endfor %}
+    </ol>
+  </section>
+</div>
+
+<div class="grid two wide-left">
+  <section class="card">
+    <h2>Juegos jugados</h2>
+    <table>
+      <thead><tr><th>Juego</th><th>Calificación</th><th>Horas</th><th></th></tr></thead>
+      <tbody>
+      {% for g in data.played %}
+        <tr>
+          <td><a href="{{ url_for('games.detail', game_id=g.id) }}">{{ g.title }}</a></td>
+          <td class="stars">{{ '★' * g.rating }}<span class="off">{{ '★' * (5 - g.rating) }}</span></td>
+          <td>{{ g.hours }}</td>
+          <td>
+            <form method="post" action="{{ url_for('players.delete_play', username=p.username, game_id=g.id) }}">
+              <button class="icon" title="Quitar">✕</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4" class="muted">Todavía no ha jugado nada.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    <h3>Registrar / actualizar partida</h3>
+    <form method="post" action="{{ url_for('players.add_play', username=p.username) }}" class="form inline">
+      <select name="game_id" required>
+        <option value="">Elige un juego…</option>
+        {% for g in all_games|sort(attribute='title') %}
+          <option value="{{ g.id }}">{{ g.title }}{% if g.id in played_ids %} (ya jugado){% endif %}</option>
+        {% endfor %}
+      </select>
+      <select name="rating" required>
+        {% for i in range(5, 0, -1) %}<option value="{{ i }}">{{ i }} ★</option>{% endfor %}
+      </select>
+      <input name="hours" type="number" min="0" value="10" title="Horas jugadas">
+      <button class="btn" type="submit">Guardar</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Amigos</h2>
+    <ul class="chips">
+      {% for f in data.friends %}
+        <li><a href="{{ url_for('players.detail', username=f.username) }}">{{ f.name }}</a>
+          <form method="post" action="{{ url_for('players.remove_friend', username=p.username, other=f.username) }}">
+            <button class="icon" title="Quitar amistad">✕</button>
+          </form>
+        </li>
+      {% else %}<li class="muted">Sin amigos aún.</li>{% endfor %}
+    </ul>
+    <form method="post" action="{{ url_for('players.add_friend', username=p.username) }}" class="form inline">
+      <select name="friend" required>
+        <option value="">Agregar amigo…</option>
+        {% for o in other_players %}<option value="{{ o.username }}">{{ o.name }}</option>{% endfor %}
+      </select>
+      <button class="btn" type="submit">Agregar</button>
+    </form>
+
+    <h3>Personas que quizá conozcas</h3>
+    <p class="hint">Amigos de amigos · vecindad a 2 saltos</p>
+    <ul class="list">
+      {% for s in friend_suggestions %}
+        <li><a href="{{ url_for('players.detail', username=s.username) }}">{{ s.name }}</a>
+            <small>{{ s.mutualFriends }} amigo(s) en común · {{ s.gamesInCommon }} juego(s) en común</small></li>
+      {% else %}<li class="muted">Sin sugerencias.</li>{% endfor %}
+    </ul>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Editar {{ player.name }}{% endblock %}
+{% block content %}
+<section class="card narrow">
+  <h1>Editar jugador <span class="muted">@{{ player.username }}</span></h1>
+  <form method="post" class="form">
+    <label>Nombre <input name="name" value="{{ player.name }}" required></label>
+    <label>País (2 letras) <input name="country" value="{{ player.country or '' }}" maxlength="2"></label>
+    <div class="actions">
+      <button class="btn" type="submit">Guardar cambios</button>
+      <a class="btn ghost" href="{{ url_for('players.detail', username=player.username) }}">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

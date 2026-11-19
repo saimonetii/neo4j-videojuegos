@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% set g = data.game %}
+{% block title %}{{ g.title }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ g.title }} <span class="muted">({{ g.year }})</span></h1>
+    <p class="muted">Desarrollado por {{ data.developers|join(', ') }}
+      {% if data.avgRating %} · <span class="stars">★</span> {{ data.avgRating }} de {{ data.players|length }} jugador(es){% endif %}</p>
+  </div>
+  <div class="actions">
+    <a class="btn ghost" href="{{ url_for('games.edit', game_id=g.id) }}">Editar</a>
+    <form method="post" action="{{ url_for('games.delete', game_id=g.id) }}"
+          onsubmit='return confirm({{ ("¿Eliminar " ~ g.title ~ " y todas sus relaciones?")|tojson }});'>
+      <button class="btn danger" type="submit">Eliminar</button>
+    </form>
+  </div>
+</div>
+
+<div class="grid two wide-left">
+  <section class="card">
+    {% if g.description %}<p>{{ g.description }}</p>{% endif %}
+    <p><b>Géneros:</b> {% for ge in data.genres %}<a class="tag" href="{{ url_for('games.list_games', genre=ge) }}">{{ ge }}</a>{% endfor %}</p>
+    <p><b>Plataformas:</b> {% for pf in data.platforms %}<a class="tag alt" href="{{ url_for('games.list_games', platform=pf) }}">{{ pf }}</a>{% endfor %}</p>
+
+    <h2>Jugadores</h2>
+    <table>
+      <thead><tr><th>Jugador</th><th>Calificación</th><th>Horas</th></tr></thead>
+      <tbody>
+      {% for p in data.players %}
+        <tr><td><a href="{{ url_for('players.detail', username=p.username) }}">{{ p.name }}</a></td>
+            <td class="stars">{{ '★' * p.rating }}<span class="off">{{ '★' * (5 - p.rating) }}</span></td>
+            <td>{{ p.hours }}</td></tr>
+      {% else %}
+        <tr><td colspan="3" class="muted">Nadie lo ha jugado aún.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <div>
+    <section class="card rec">
+      <h3>Juegos similares</h3>
+      <p class="hint">Comparten género o estudio · 2 saltos</p>
+      <ol>
+        {% for s in similar %}
+          <li><a href="{{ url_for('games.detail', game_id=s.id) }}">{{ s.title }}</a>
+              <small>{{ s.shared }} en común: {{ s.traits|join(', ') }}</small></li>
+        {% else %}<li class="muted">Sin similares.</li>{% endfor %}
+      </ol>
+    </section>
+    <section class="card rec">
+      <h3>Quienes lo jugaron también jugaron</h3>
+      <p class="hint">Co-ocurrencia vía :Player · 2 saltos</p>
+      <ol>
+        {% for s in also_played %}
+          <li><a href="{{ url_for('games.detail', game_id=s.id) }}">{{ s.title }}</a>
+              <small>{{ s.sharedPlayers }} jugador(es) · ★ {{ s.avgRating }}</small></li>
+        {% else %}<li class="muted">Sin datos.</li>{% endfor %}
+      </ol>
+    </section>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+# Credenciales: NUNCA subir el .env
+.env
+Neo4j-*.txt
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/

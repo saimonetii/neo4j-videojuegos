@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Inicio{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Recomendador de videojuegos sobre un grafo</h1>
+  <p>Jugadores, juegos, géneros, plataformas y estudios conectados en Neo4j AuraDB.
+     Las recomendaciones se calculan recorriendo relaciones, no con JOINs.</p>
+  <div class="actions">
+    <a class="btn" href="{{ url_for('players.list_players') }}">Ver jugadores</a>
+    <a class="btn ghost" href="{{ url_for('games.list_games') }}">Explorar juegos</a>
+  </div>
+</section>
+
+<div class="grid two">
+  <section class="card">
+    <h2>Nodos en la base</h2>
+    <div class="stats">
+      {% for row in stats.labels %}
+        <div class="stat"><span class="num">{{ row.total }}</span><span class="lbl">:{{ row.label }}</span></div>
+      {% else %}
+        <p class="muted">La base está vacía. Ejecuta <code>python -m database.seed</code>.</p>
+      {% endfor %}
+    </div>
+    <h2>Relaciones</h2>
+    <div class="stats">
+      {% for row in stats.rels %}
+        <div class="stat small"><span class="num">{{ row.total }}</span><span class="lbl">:{{ row.type }}</span></div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Mejor calificados</h2>
+    <table>
+      <thead><tr><th>Juego</th><th>Promedio</th><th>Votos</th><th>Horas</th></tr></thead>
+      <tbody>
+      {% for g in stats.top_games %}
+        <tr><td><a href="{{ url_for('games.detail', game_id=g.id) }}">{{ g.title }}</a></td>
+            <td><span class="stars">★</span> {{ g.avgRating }}</td><td>{{ g.votes }}</td><td>{{ g.hours }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <h2>Géneros con más horas jugadas</h2>
+    <ul class="bars">
+      {% set max_h = (stats.top_genres[0].hours if stats.top_genres else 1) %}
+      {% for g in stats.top_genres %}
+        <li><span>{{ g.genre }}</span><div class="bar"><i style="width: {{ (g.hours / max_h * 100)|round(0) }}%"></i></div><b>{{ g.hours }} h</b></li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
+{% endblock %}

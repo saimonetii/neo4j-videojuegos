@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Grafo de {{ username }}{% endblock %}
+{% block head %}
+<script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Vecindad de <a href="{{ url_for('players.detail', username=username) }}">@{{ username }}</a></h1>
+  <div class="legend">
+    <span class="lg me">Jugador</span><span class="lg player">Amigo</span>
+    <span class="lg game">Juego</span><span class="lg genre">Género</span>
+  </div>
+</div>
+<div id="network" class="card network"></div>
+{% endblock %}
+{% block scripts %}
+<script>
+  const colors = {
+    Me:     {background: '#f59e0b', border: '#fbbf24'},
+    Player: {background: '#8b5cf6', border: '#a78bfa'},
+    Game:   {background: '#0ea5e9', border: '#38bdf8'},
+    Genre:  {background: '#10b981', border: '#34d399'},
+  };
+  fetch("{{ url_for('main.graph_api', username=username) }}")
+    .then(r => r.json())
+    .then(data => {
+      const nodes = data.nodes.map(n => ({
+        ...n, shape: n.group === 'Genre' ? 'box' : 'dot',
+        size: n.group === 'Me' ? 28 : 16,
+        color: colors[n.group], font: {color: '#e5e7eb'}
+      }));
+      const edges = data.edges.map(e => ({
+        ...e, arrows: e.type === 'FRIEND_OF' ? '' : 'to',
+        dashes: e.type === 'HAS_GENRE', font: {color: '#9ca3af', strokeWidth: 0, size: 11},
+        color: {color: e.type === 'FRIEND_OF' ? '#a78bfa' : '#475569'}
+      }));
+      new vis.Network(document.getElementById('network'),
+        {nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges)},
+        {physics: {stabilization: true, barnesHut: {springLength: 120}}, interaction: {hover: true}});
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Caminos{% endblock %}
+{% block content %}
+<h1>¿Cómo están conectados dos jugadores?</h1>
+<p class="muted">Búsqueda del camino más corto con <code>shortestPath()</code> sobre el grafo.</p>
+
+<form method="get" class="card form inline">
+  <select name="source" required>
+    <option value="">Desde…</option>
+    {% for p in players %}<option value="{{ p.username }}" {% if p.username == source %}selected{% endif %}>{{ p.name }}</option>{% endfor %}
+  </select>
+  <select name="target" required>
+    <option value="">Hasta…</option>
+    {% for p in players %}<option value="{{ p.username }}" {% if p.username == target %}selected{% endif %}>{{ p.name }}</option>{% endfor %}
+  </select>
+  <select name="mode">
+    <option value="social" {% if mode == 'social' %}selected{% endif %}>Solo amistades (FRIEND_OF)</option>
+    <option value="any" {% if mode == 'any' %}selected{% endif %}>Amistades o juegos en común (FRIEND_OF | PLAYED)</option>
+  </select>
+  <button class="btn" type="submit">Buscar camino</button>
+</form>
+
+{% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+
+{% if result %}
+<section class="card">
+  <h2>{{ result.hops }} salto(s) de distancia</h2>
+  <div class="path">
+    {% for n in result.nodes %}
+      {% if n.label == 'Player' %}
+        <a class="node player" href="{{ url_for('players.detail', username=n.key) }}">{{ n.name }}</a>
+      {% else %}
+        <a class="node game" href="{{ url_for('games.detail', game_id=n.key) }}">{{ n.name }}</a>
+      {% endif %}
+      {% if not loop.last %}<span class="edge">{{ result.rels[loop.index0] }}</span>{% endif %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

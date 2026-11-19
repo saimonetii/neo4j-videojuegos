@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }}{% endblock %}
+{% block content %}
+<section class="card narrow">
+  <h1>{{ heading }}</h1>
+  <form method="post" action="{{ action }}" class="form">
+    <label>Título <input name="title" value="{{ game.title or '' }}" required></label>
+    <label>Año <input name="year" type="number" min="1970" max="2100" value="{{ game.year or '' }}" required></label>
+    <label>Desarrollador
+      <input name="developer" list="devs" value="{{ game.developer or '' }}" required>
+      <datalist id="devs">{% for d in catalog.Developer %}<option value="{{ d }}">{% endfor %}</datalist>
+    </label>
+    <label>Géneros (separados por coma)
+      <input name="genres" value="{{ (game.genres or [])|join(', ') }}" placeholder="RPG, Acción">
+      <small class="muted">Existentes: {{ catalog.Genre|join(', ') }}</small>
+    </label>
+    <label>Plataformas (separadas por coma)
+      <input name="platforms" value="{{ (game.platforms or [])|join(', ') }}" placeholder="PC, PS5">
+      <small class="muted">Existentes: {{ catalog.Platform|join(', ') }}</small>
+    </label>
+    <label>Descripción <textarea name="description" rows="3">{{ game.description or '' }}</textarea></label>
+    <div class="actions">
+      <button class="btn" type="submit">Guardar</button>
+      <a class="btn ghost" href="{{ url_for('games.list_games') }}">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
