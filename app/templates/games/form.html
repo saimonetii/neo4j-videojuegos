@@ -18,6 +18,9 @@
       <input name="platforms" value="{{ (game.platforms or [])|join(', ') }}" placeholder="PC, PS5">
       <small class="muted">Existentes: {{ catalog.Platform|join(', ') }}</small>
     </label>
+    <label>URL de la imagen (opcional)
+      <input name="image" type="url" value="{{ game.image or '' }}" placeholder="https://...">
+    </label>
     <label>Descripción <textarea name="description" rows="3">{{ game.description or '' }}</textarea></label>
     <div class="actions">
       <button class="btn" type="submit">Guardar</button>

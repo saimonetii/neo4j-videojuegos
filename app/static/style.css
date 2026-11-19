@@ -114,12 +114,15 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); bo
 .tag { display: inline-block; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--link); border-radius: 999px;
        padding: .1rem .55rem; font-size: .75rem; margin: 0 .25rem .25rem 0; }
 .tag.alt { background: color-mix(in srgb, var(--accent-2) 16%, transparent); color: var(--accent-2); }
-.game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
-.game { display: flex; gap: .8rem; background: var(--panel); border: 1px solid var(--line);
+.game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+.game { display: flex; flex-direction: column; gap: .7rem; background: var(--panel); border: 1px solid var(--line);
         border-radius: var(--radius); padding: .8rem; color: var(--text); transition: transform .1s, border-color .1s; }
 .game:hover { transform: translateY(-2px); border-color: var(--accent); text-decoration: none; }
-.cover { width: 56px; height: 72px; border-radius: 8px; flex-shrink: 0; display: grid; place-items: center;
-         font-size: 1.6rem; font-weight: 800; color: var(--on-accent); background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+.cover { position: relative; overflow: hidden; border-radius: 8px; flex-shrink: 0; display: grid; place-items: center;
+         aspect-ratio: 460 / 215; font-size: 2.4rem; font-weight: 800; color: var(--on-accent);
+         background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+.cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cover.banner { margin-bottom: 1rem; }
 .game .info { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
 .game .meta { color: var(--muted); font-size: .8rem; }
 
@@ -127,7 +130,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); bo
 .node { padding: .45rem .9rem; border-radius: 999px; font-weight: 600; color: var(--on-accent); }
 .node.player { background: var(--n-player); } .node.game { background: var(--n-game); color: #fff; }
 .edge { color: var(--muted); font-family: monospace; font-size: .8rem; }
-.edge::before { content: "— "; } .edge::after { content: " —"; }
+.edge { display: inline-block; width: 28px; height: 2px; background: var(--muted); }
 
 .network { height: 620px; padding: 0; overflow: hidden; }
 .legend { display: flex; gap: .8rem; font-size: .85rem; color: var(--muted); }

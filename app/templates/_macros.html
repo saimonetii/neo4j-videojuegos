@@ -1,0 +1,7 @@
+{# Portada del juego: muestra la imagen si existe; si no hay o no carga, queda la inicial. #}
+{% macro cover(title, image, cls='') -%}
+<div class="cover {{ cls }}">
+  <span>{{ title[:1] }}</span>
+  {% if image %}<img src="{{ image }}" alt="{{ title }}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">{% endif %}
+</div>
+{%- endmacro %}

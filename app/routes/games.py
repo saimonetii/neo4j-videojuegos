@@ -31,6 +31,7 @@ def _game_form():
         "title": title,
         "year": year,
         "description": request.form.get("description", "").strip(),
+        "image": request.form.get("image", "").strip() or None,
         "developer": developer,
         "genres": _split(request.form.get("genres", "")),
         "platforms": _split(request.form.get("platforms", "")),

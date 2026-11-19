@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import cover %}
 {% set g = data.game %}
 {% block title %}{{ g.title }}{% endblock %}
 {% block content %}
@@ -19,6 +20,7 @@
 
 <div class="grid two wide-left">
   <section class="card">
+    {{ cover(g.title, g.image, 'banner') }}
     {% if g.description %}<p>{{ g.description }}</p>{% endif %}
     <p><b>Géneros:</b> {% for ge in data.genres %}<a class="tag" href="{{ url_for('games.list_games', genre=ge) }}">{{ ge }}</a>{% endfor %}</p>
     <p><b>Plataformas:</b> {% for pf in data.platforms %}<a class="tag alt" href="{{ url_for('games.list_games', platform=pf) }}">{{ pf }}</a>{% endfor %}</p>

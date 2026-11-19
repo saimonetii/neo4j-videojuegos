@@ -53,6 +53,25 @@ GAMES = [
     ("it-takes-two", "It Takes Two", 2021, "Hazelight Studios", ["Aventura", "Plataformas", "Cooperativo"], ["PC", "PS5", "Xbox Series", "Switch"], "Aventura cooperativa obligatoria para dos."),
 ]
 
+# Portadas: imagen "header" oficial de la tienda de Steam (los juegos que no
+# están en Steam quedan sin imagen y la página muestra la inicial del título).
+STEAM_APP_IDS = {
+    "the-witcher-3": 292030, "elden-ring": 1245620, "dark-souls-3": 374320, "sekiro": 814380,
+    "cyberpunk-2077": 1091500, "baldurs-gate-3": 1086940, "divinity-os2": 435150,
+    "hollow-knight": 367520, "celeste": 504230, "hades": 1145360, "dead-cells": 588650,
+    "stardew-valley": 413150, "terraria": 105600, "cs2": 730, "overwatch-2": 2357570,
+    "apex-legends": 1172470, "fc-25": 2669320, "rocket-league": 252950, "gta-v": 271590,
+    "rdr2": 1174180, "god-of-war-ragnarok": 2322010, "street-fighter-6": 1364780,
+    "resident-evil-4": 2050650, "portal-2": 620, "it-takes-two": 1426210,
+}
+STEAM_HEADER = "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/{}/header.jpg"
+
+
+def image_for(game_id):
+    app_id = STEAM_APP_IDS.get(game_id)
+    return STEAM_HEADER.format(app_id) if app_id else None
+
+
 # (username, nombre, país)
 PLAYERS = [
     ("ana_rpg", "Ana López", "MX"),
@@ -114,7 +133,8 @@ WIPE = "MATCH (n) DETACH DELETE n"
 LOAD_GAMES = """
 UNWIND $rows AS row
 MERGE (g:Game {id: row.id})
-SET g.title = row.title, g.year = row.year, g.description = row.description
+SET g.title = row.title, g.year = row.year, g.description = row.description,
+    g.image = row.image
 MERGE (d:Developer {name: row.developer})
 MERGE (g)-[:DEVELOPED_BY]->(d)
 FOREACH (name IN row.genres |
@@ -152,7 +172,8 @@ SET r.since = date(row.since)
 def rows():
     """Convierte las tuplas en listas de diccionarios (parámetros de UNWIND)."""
     return {
-        "games": [dict(zip(("id", "title", "year", "developer", "genres", "platforms", "description"), g)) for g in GAMES],
+        "games": [dict(zip(("id", "title", "year", "developer", "genres", "platforms", "description"), g),
+                       image=image_for(g[0])) for g in GAMES],
         "players": [dict(zip(("username", "name", "country"), p)) for p in PLAYERS],
         "plays": [dict(zip(("username", "game", "rating", "hours"), p)) for p in PLAYS],
         "friendships": [dict(zip(("a", "b", "since"), f)) for f in FRIENDSHIPS],

@@ -16,7 +16,7 @@
     <h2>Nodos en la base</h2>
     <div class="stats">
       {% for row in stats.labels %}
-        <div class="stat"><span class="num">{{ row.total }}</span><span class="lbl">:{{ row.label }}</span></div>
+        <div class="stat"><span class="num">{{ row.total }}</span><span class="lbl">{{ row.label }}</span></div>
       {% else %}
         <p class="muted">La base está vacía. Ejecuta <code>python -m database.seed</code>.</p>
       {% endfor %}
@@ -24,7 +24,7 @@
     <h2>Relaciones</h2>
     <div class="stats">
       {% for row in stats.rels %}
-        <div class="stat small"><span class="num">{{ row.total }}</span><span class="lbl">:{{ row.type }}</span></div>
+        <div class="stat small"><span class="num">{{ row.total }}</span><span class="lbl">{{ row.type }}</span></div>
       {% endfor %}
     </div>
   </section>

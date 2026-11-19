@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macros.html" import cover %}
 {% block title %}Videojuegos{% endblock %}
 {% block content %}
 <div class="page-head">
@@ -23,7 +24,7 @@
 <div class="game-grid">
   {% for g in games %}
     <a class="game" href="{{ url_for('games.detail', game_id=g.id) }}">
-      <div class="cover">{{ g.title[:1] }}</div>
+      {{ cover(g.title, g.image) }}
       <div class="info">
         <strong>{{ g.title }}</strong>
         <span class="muted">{{ g.year }}</span>

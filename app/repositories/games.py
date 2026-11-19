@@ -5,7 +5,8 @@ from .. import db
 # FOREACH permite crear 0..n relaciones sin "matar" la fila cuando la lista
 # viene vacía (con UNWIND [] la consulta no devolvería nada).
 CREATE_GAME = """
-CREATE (g:Game {id: $id, title: $title, year: $year, description: $description})
+CREATE (g:Game {id: $id, title: $title, year: $year, description: $description,
+                image: $image})
 MERGE (d:Developer {name: $developer})
 MERGE (g)-[:DEVELOPED_BY]->(d)
 FOREACH (name IN $genres |
@@ -24,7 +25,7 @@ WHERE ($genre IS NULL OR EXISTS { (g)-[:HAS_GENRE]->(:Genre {name: $genre}) })
   AND ($q IS NULL OR toLower(g.title) CONTAINS toLower($q))
 OPTIONAL MATCH (g)<-[r:PLAYED]-(:Player)
 WITH g, avg(r.rating) AS avgRating, count(r) AS players
-RETURN g.id AS id, g.title AS title, g.year AS year,
+RETURN g.id AS id, g.title AS title, g.year AS year, g.image AS image,
        [(g)-[:HAS_GENRE]->(ge:Genre) | ge.name] AS genres,
        round(avgRating, 1) AS avgRating, players
 ORDER BY players DESC, title
@@ -32,7 +33,7 @@ ORDER BY players DESC, title
 
 GET_GAME = """
 MATCH (g:Game {id: $id})
-RETURN g {.id, .title, .year, .description} AS game,
+RETURN g {.id, .title, .year, .description, .image} AS game,
        [(g)-[:DEVELOPED_BY]->(d:Developer) | d.name] AS developers,
        [(g)-[:HAS_GENRE]->(ge:Genre) | ge.name] AS genres,
        [(g)-[:AVAILABLE_ON]->(pf:Platform) | pf.name] AS platforms,
@@ -45,7 +46,7 @@ RETURN g {.id, .title, .year, .description} AS game,
 UPDATE_GAME = """
 MATCH (g:Game {id: $id})
 SET g.title = $title, g.year = $year, g.description = $description,
-    g.updatedAt = datetime()
+    g.image = $image, g.updatedAt = datetime()
 WITH g
 OPTIONAL MATCH (g)-[old:HAS_GENRE|AVAILABLE_ON|DEVELOPED_BY]->()
 DELETE old
@@ -82,7 +83,7 @@ WHERE other <> g
 WITH other, count(trait) AS shared, collect(trait.name) AS traits
 OPTIONAL MATCH (other)<-[r:PLAYED]-(:Player)
 WITH other, shared, traits, avg(r.rating) AS avgRating
-RETURN other.id AS id, other.title AS title, shared, traits,
+RETURN other.id AS id, other.title AS title, other.image AS image, shared, traits,
        round(coalesce(avgRating, 0.0), 1) AS avgRating
 ORDER BY shared DESC, avgRating DESC, title
 LIMIT 6
@@ -92,7 +93,7 @@ LIMIT 6
 ALSO_PLAYED = """
 MATCH (g:Game {id: $id})<-[:PLAYED]-(p:Player)-[r:PLAYED]->(other:Game)
 WHERE other <> g
-RETURN other.id AS id, other.title AS title,
+RETURN other.id AS id, other.title AS title, other.image AS image,
        count(DISTINCT p) AS sharedPlayers, round(avg(r.rating), 1) AS avgRating
 ORDER BY sharedPlayers DESC, avgRating DESC, title
 LIMIT 6

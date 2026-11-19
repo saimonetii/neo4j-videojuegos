@@ -14,8 +14,8 @@
     {% for p in players %}<option value="{{ p.username }}" {% if p.username == target %}selected{% endif %}>{{ p.name }}</option>{% endfor %}
   </select>
   <select name="mode">
-    <option value="social" {% if mode == 'social' %}selected{% endif %}>Solo amistades (FRIEND_OF)</option>
-    <option value="any" {% if mode == 'any' %}selected{% endif %}>Amistades o juegos en común (FRIEND_OF | PLAYED)</option>
+    <option value="social" {% if mode == 'social' %}selected{% endif %}>Solo amistades</option>
+    <option value="any" {% if mode == 'any' %}selected{% endif %}>Amistades o juegos en común</option>
   </select>
   <button class="btn" type="submit">Buscar camino</button>
 </form>
@@ -32,7 +32,7 @@
       {% else %}
         <a class="node game" href="{{ url_for('games.detail', game_id=n.key) }}">{{ n.name }}</a>
       {% endif %}
-      {% if not loop.last %}<span class="edge">{{ result.rels[loop.index0] }}</span>{% endif %}
+      {% if not loop.last %}<span class="edge"></span>{% endif %}
     {% endfor %}
   </div>
 </section>
