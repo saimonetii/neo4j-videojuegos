@@ -5,7 +5,7 @@ from .. import db
 SHORTEST_PATH_SOCIAL = """
 MATCH (a:Player {username: $source}), (b:Player {username: $target})
 MATCH path = shortestPath((a)-[:FRIEND_OF*..6]-(b))
-RETURN [n IN nodes(path) | {label: labels(n)[0], key: n.username, name: n.name}] AS nodes,
+RETURN [n IN nodes(path) | {label: labels(n)[0], key: n.username, name: n.name, image: null}] AS nodes,
        [r IN relationships(path) | type(r)] AS rels,
        length(path) AS hops
 """
@@ -16,7 +16,8 @@ MATCH (a:Player {username: $source}), (b:Player {username: $target})
 MATCH path = shortestPath((a)-[:FRIEND_OF|PLAYED*..8]-(b))
 RETURN [n IN nodes(path) | {label: labels(n)[0],
                             key: coalesce(n.username, n.id),
-                            name: coalesce(n.name, n.title)}] AS nodes,
+                            name: coalesce(n.name, n.title),
+                            image: n.image}] AS nodes,
        [r IN relationships(path) | type(r)] AS rels,
        length(path) AS hops
 """

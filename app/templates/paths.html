@@ -23,18 +23,54 @@
 {% if error %}<div class="flash error">{{ error }}</div>{% endif %}
 
 {% if result %}
-<section class="card">
-  <h2>{{ result.hops }} salto(s) de distancia</h2>
-  <div class="path">
-    {% for n in result.nodes %}
-      {% if n.label == 'Player' %}
-        <a class="node player" href="{{ url_for('players.detail', username=n.key) }}">{{ n.name }}</a>
-      {% else %}
-        <a class="node game" href="{{ url_for('games.detail', game_id=n.key) }}">{{ n.name }}</a>
-      {% endif %}
-      {% if not loop.last %}<span class="edge"></span>{% endif %}
-    {% endfor %}
+{% set count = result.nodes|length %}
+{% set W = [1200, 200 + (count - 1) * 240]|max %}{% set H = 330 %}
+{% set step = ((W - 200) / (count - 1)) if count > 1 else 0 %}
+<section class="card path-card">
+  <div class="path-head">
+    <div>
+      <span class="kicker-sm">Camino encontrado</span>
+      <h2>{{ result.hops }} salto(s) de distancia</h2>
+    </div>
+    <div class="legend">
+      <span class="lg-dot pl">Jugador</span><span class="lg-dot gm">Juego</span>
+      <span class="lg-line">— amistad · jugó</span>
+    </div>
   </div>
+  <svg class="path-graph" viewBox="0 0 {{ W }} {{ H }}" role="img" aria-label="Camino entre jugadores">
+    <defs>
+      {% for n in result.nodes %}{% if n.image %}
+      <clipPath id="clip{{ loop.index }}"><circle cx="{{ 100 + (loop.index0 * step) }}" cy="150" r="54"/></clipPath>
+      {% endif %}{% endfor %}
+    </defs>
+    {% for n in result.nodes %}{% if not loop.last %}
+      {% set x1 = 100 + loop.index0 * step %}{% set x2 = 100 + loop.index * step %}
+      {% set rel = result.rels[loop.index0] %}
+      <line x1="{{ x1 + 58 }}" y1="150" x2="{{ x2 - 58 }}" y2="150"
+            class="edge-line {{ 'friend' if rel == 'FRIEND_OF' else 'played' }}"/>
+      <text x="{{ (x1 + x2) / 2 }}" y="132" class="edge-label">{{ 'amigos' if rel == 'FRIEND_OF' else 'jugó' }}</text>
+    {% endif %}{% endfor %}
+    {% for n in result.nodes %}
+      {% set cx = 100 + loop.index0 * step %}
+      {% set href = url_for('players.detail', username=n.key) if n.label == 'Player' else url_for('games.detail', game_id=n.key) %}
+      <a href="{{ href }}">
+        {% if n.label == 'Player' %}
+          <circle cx="{{ cx }}" cy="150" r="54" class="node-player"/>
+          <text x="{{ cx }}" y="163" class="node-initial">{{ n.name[:1] }}</text>
+        {% else %}
+          <circle cx="{{ cx }}" cy="150" r="54" class="node-game"/>
+          {% if n.image %}<image href="{{ n.image }}" x="{{ cx - 115 }}" y="96" width="230" height="108"
+                 preserveAspectRatio="xMidYMid slice" clip-path="url(#clip{{ loop.index }})"/>{% else %}
+          <text x="{{ cx }}" y="163" class="node-initial">{{ n.name[:1] }}</text>{% endif %}
+          <circle cx="{{ cx }}" cy="150" r="54" class="node-ring"/>
+        {% endif %}
+        <text x="{{ cx }}" y="238" class="node-name">{{ n.name if n.name|length < 20 else n.name[:18] ~ '…' }}</text>
+        <text x="{{ cx }}" y="266" class="node-type">{{ 'Jugador' if n.label == 'Player' else 'Juego' }}</text>
+      </a>
+    {% endfor %}
+  </svg>
+  <p class="muted path-foot">Calculado en Neo4j con <code>shortestPath()</code> sobre las relaciones
+    {{ 'FRIEND_OF' if mode == 'social' else 'FRIEND_OF y PLAYED' }}.</p>
 </section>
 {% endif %}
 {% endblock %}

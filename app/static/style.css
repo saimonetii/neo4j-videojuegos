@@ -251,3 +251,27 @@ html, body { overflow-x: hidden; }
 }
 .footer-cols .brand { display: inline-flex; align-items: center; gap: .4rem; font-size: 1.15rem; font-weight: 800; }
 .footer-cols .brand .logo { display: inline; margin: 0; color: var(--accent); font-size: 1.15rem; }
+
+/* Camino como grafo */
+.path-card { padding: 1.6rem 1.8rem; }
+.path-head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; }
+.path-head h2 { margin: .2rem 0 0; font-size: 1.6rem; }
+.kicker-sm { color: var(--accent-2); font-size: .75rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.lg-line { color: var(--muted); font-size: .85rem; }
+.path-graph { width: 100%; height: auto; margin-top: 1rem; display: block; }
+.edge-line { stroke: #5a5a62; stroke-width: 4; }
+.edge-line.played { stroke: var(--n-game); stroke-dasharray: 10 8; }
+.edge-line.friend { stroke: var(--accent); }
+.edge-label { fill: var(--muted); font-size: 18px; text-anchor: middle; font-weight: 700; letter-spacing: .04em; }
+.node-player { fill: var(--accent); stroke: #ff6b7c; stroke-width: 3; }
+.node-game { fill: var(--n-game); }
+.node-ring { fill: none; stroke: var(--n-game); stroke-width: 4; }
+.node-initial { fill: #fff; font-size: 40px; font-weight: 800; text-anchor: middle; }
+.node-name { fill: var(--text); font-size: 22px; font-weight: 700; text-anchor: middle; }
+.node-type { fill: var(--muted); font-size: 16px; text-anchor: middle; text-transform: uppercase; letter-spacing: .08em; }
+.path-graph a:hover .node-player, .path-graph a:hover .node-ring { stroke: #fff; }
+.path-foot { margin: .4rem 0 0; font-size: .85rem; }
+.path-head .legend { display: flex; align-items: center; gap: 1rem; white-space: nowrap; }
+.lg-dot { color: var(--muted); font-size: .85rem; }
+.lg-dot::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+.lg-dot.pl::before { background: var(--accent); } .lg-dot.gm::before { background: var(--n-game); }
