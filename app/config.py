@@ -7,8 +7,16 @@ import os
 
 from dotenv import load_dotenv
 
-# utf-8-sig: tolera el BOM que a veces agrega el Bloc de notas de Windows
-load_dotenv(encoding="utf-8-sig", override=True)
+from pathlib import Path
+
+# Busca el .env junto al proyecto; si no está (por ejemplo, en una copia bajada
+# como ZIP), usa el de la copia clonada en PycharmProjects.
+_ROOT = Path(__file__).resolve().parent.parent
+for _candidate in (_ROOT / ".env", Path.home() / "PycharmProjects" / "neo4j-videojuegos" / ".env"):
+    if _candidate.exists():
+        # utf-8-sig: tolera el BOM que a veces agrega el Bloc de notas de Windows
+        load_dotenv(_candidate, encoding="utf-8-sig", override=True)
+        break
 
 
 class Config:
