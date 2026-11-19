@@ -32,10 +32,11 @@ def init_driver():
         auth=(Config.NEO4J_USERNAME, Config.NEO4J_PASSWORD),
         max_connection_lifetime=300,  # Aura cierra conexiones inactivas; las renovamos antes
     )
-    _driver.verify_connectivity()  # lanza excepción si la URI o las credenciales están mal
-
-    info = _driver.get_server_info()
-    _server_info = {"address": str(info.address), "agent": info.agent}
+    # Verifica la conexión contra la base configurada (lanza excepción si la URI,
+    # las credenciales o el nombre de la base están mal) y obtiene datos del servidor.
+    _records, summary, _keys = _driver.execute_query(
+        "RETURN 1 AS ok", database_=Config.NEO4J_DATABASE, routing_=RoutingControl.READ)
+    _server_info = {"address": str(summary.server.address), "agent": summary.server.agent}
     atexit.register(close_driver)
     return _driver
 
