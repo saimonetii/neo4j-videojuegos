@@ -13,7 +13,10 @@ load_dotenv(encoding="utf-8-sig", override=True)
 
 class Config:
     # Conexión a Neo4j AuraDB (mismos nombres que el archivo de credenciales de Aura)
-    NEO4J_URI = os.getenv("NEO4J_URI")            # ej. neo4j+s://xxxxxxxx.databases.neo4j.io
+    # ej. neo4j+s://xxxxxxxx.databases.neo4j.io  (si falta, se arma con AURA_INSTANCEID)
+    NEO4J_URI = os.getenv("NEO4J_URI") or (
+        f"neo4j+s://{os.getenv('AURA_INSTANCEID')}.databases.neo4j.io"
+        if os.getenv("AURA_INSTANCEID") else None)
     NEO4J_USERNAME = os.getenv("NEO4J_USERNAME", "neo4j")
     NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD")
     NEO4J_DATABASE = os.getenv("NEO4J_DATABASE", "neo4j")
