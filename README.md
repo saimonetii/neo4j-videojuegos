@@ -86,7 +86,7 @@ en la pestaña *Query* de la consola de AuraDB.
 
 ## Ejecutar
 
-En Windows también puedes dar **doble clic** a `cargar_datos.bat` (seeding) y luego a
+En Windows también puedes dar **doble clic** a `instalar.bat` (una vez), `cargar_datos.bat` (seeding) y luego a
 `abrir_app.bat` (abre la página sola en el navegador).
 
 
