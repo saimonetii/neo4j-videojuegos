@@ -13,11 +13,28 @@
 import atexit
 
 from neo4j import GraphDatabase, RoutingControl
+from neo4j.exceptions import DriverError, Neo4jError
 
 from .config import Config
 
 _driver = None
 _server_info = {}
+
+
+def _candidates():
+    """Combinaciones (URI, base) a probar: primero lo que dice el .env y, si falla,
+    las que corresponden a la instancia de Aura (en las instancias nuevas de Aura
+    la base se llama igual que el id de la instancia)."""
+    options = [(Config.NEO4J_URI, Config.NEO4J_DATABASE)]
+    if Config.AURA_INSTANCEID:
+        aura_uri = f"neo4j+s://{Config.AURA_INSTANCEID}.databases.neo4j.io"
+        options += [(aura_uri, Config.AURA_INSTANCEID), (aura_uri, Config.NEO4J_DATABASE),
+                    (aura_uri, None)]
+    unique = []
+    for option in options:
+        if option[0] and option not in unique:
+            unique.append(option)
+    return unique
 
 
 def init_driver():
@@ -27,18 +44,30 @@ def init_driver():
         return _driver
 
     Config.validate()
-    _driver = GraphDatabase.driver(
-        Config.NEO4J_URI,
-        auth=(Config.NEO4J_USERNAME, Config.NEO4J_PASSWORD),
-        max_connection_lifetime=300,  # Aura cierra conexiones inactivas; las renovamos antes
-    )
-    # Verifica la conexión contra la base configurada (lanza excepción si la URI,
-    # las credenciales o el nombre de la base están mal) y obtiene datos del servidor.
-    _records, summary, _keys = _driver.execute_query(
-        "RETURN 1 AS ok", database_=Config.NEO4J_DATABASE, routing_=RoutingControl.READ)
-    _server_info = {"address": str(summary.server.address), "agent": summary.server.agent}
-    atexit.register(close_driver)
-    return _driver
+    last_error = None
+    for uri, database in _candidates():
+        driver = GraphDatabase.driver(
+            uri,
+            auth=(Config.NEO4J_USERNAME, Config.NEO4J_PASSWORD),
+            max_connection_lifetime=300,  # Aura cierra conexiones inactivas; las renovamos antes
+            connection_timeout=15,
+        )
+        try:
+            # Prueba real contra la base: falla si la URI, las credenciales o el
+            # nombre de la base están mal. session.run no reintenta: responde rápido.
+            with driver.session(database=database) as session:
+                summary = session.run("RETURN 1 AS ok").consume()
+        except (DriverError, Neo4jError) as err:
+            last_error = err
+            driver.close()
+            continue
+        _driver = driver
+        Config.NEO4J_URI, Config.NEO4J_DATABASE = uri, database
+        _server_info = {"address": str(summary.server.address), "agent": summary.server.agent,
+                        "database": database or "(por defecto)"}
+        atexit.register(close_driver)
+        return _driver
+    raise last_error
 
 
 def close_driver():
