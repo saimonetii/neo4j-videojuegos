@@ -19,7 +19,8 @@ class Config:
         if os.getenv("AURA_INSTANCEID") else None)
     NEO4J_USERNAME = os.getenv("NEO4J_USERNAME", "neo4j")
     NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD")
-    NEO4J_DATABASE = os.getenv("NEO4J_DATABASE", "neo4j")
+    # Vacío/None = base "home" del usuario (la que Aura asigna por defecto)
+    NEO4J_DATABASE = os.getenv("NEO4J_DATABASE") or None
 
     # Flask
     SECRET_KEY = os.getenv("FLASK_SECRET_KEY", "cambia-esta-clave")
