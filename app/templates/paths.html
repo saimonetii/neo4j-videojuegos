@@ -23,54 +23,60 @@
 {% if error %}<div class="flash error">{{ error }}</div>{% endif %}
 
 {% if result %}
-{% set count = result.nodes|length %}
-{% set W = [1200, 200 + (count - 1) * 240]|max %}{% set H = 330 %}
-{% set step = ((W - 200) / (count - 1)) if count > 1 else 0 %}
 <section class="card path-card">
   <div class="path-head">
     <div>
       <span class="kicker-sm">Camino encontrado</span>
       <h2>{{ result.hops }} salto(s) de distancia</h2>
+      <p class="route">{% for n in result.nodes %}<b>{{ n.name }}</b>{% if not loop.last %} <span class="arrow">→</span> {% endif %}{% endfor %}</p>
     </div>
     <div class="legend">
-      <span class="lg-dot pl">Jugador</span><span class="lg-dot gm">Juego</span>
-      <span class="lg-line">— amistad · jugó</span>
+      <span class="lg-dot pl">Camino</span><span class="lg-dot other">Otros jugadores</span><span class="lg-dot gm">Juego</span>
     </div>
   </div>
-  <svg class="path-graph" viewBox="0 0 {{ W }} {{ H }}" role="img" aria-label="Camino entre jugadores">
-    <defs>
-      {% for n in result.nodes %}{% if n.image %}
-      <clipPath id="clip{{ loop.index }}"><circle cx="{{ 100 + (loop.index0 * step) }}" cy="150" r="54"/></clipPath>
-      {% endif %}{% endfor %}
-    </defs>
-    {% for n in result.nodes %}{% if not loop.last %}
-      {% set x1 = 100 + loop.index0 * step %}{% set x2 = 100 + loop.index * step %}
-      {% set rel = result.rels[loop.index0] %}
-      <line x1="{{ x1 + 58 }}" y1="150" x2="{{ x2 - 58 }}" y2="150"
-            class="edge-line {{ 'friend' if rel == 'FRIEND_OF' else 'played' }}"/>
-      <text x="{{ (x1 + x2) / 2 }}" y="132" class="edge-label">{{ 'amigos' if rel == 'FRIEND_OF' else 'jugó' }}</text>
-    {% endif %}{% endfor %}
-    {% for n in result.nodes %}
-      {% set cx = 100 + loop.index0 * step %}
-      {% set href = url_for('players.detail', username=n.key) if n.label == 'Player' else url_for('games.detail', game_id=n.key) %}
-      <a href="{{ href }}">
-        {% if n.label == 'Player' %}
-          <circle cx="{{ cx }}" cy="150" r="54" class="node-player"/>
-          <text x="{{ cx }}" y="163" class="node-initial">{{ n.name[:1] }}</text>
-        {% else %}
-          <circle cx="{{ cx }}" cy="150" r="54" class="node-game"/>
-          {% if n.image %}<image href="{{ n.image }}" x="{{ cx - 115 }}" y="96" width="230" height="108"
-                 preserveAspectRatio="xMidYMid slice" clip-path="url(#clip{{ loop.index }})"/>{% else %}
-          <text x="{{ cx }}" y="163" class="node-initial">{{ n.name[:1] }}</text>{% endif %}
-          <circle cx="{{ cx }}" cy="150" r="54" class="node-ring"/>
-        {% endif %}
-        <text x="{{ cx }}" y="238" class="node-name">{{ n.name if n.name|length < 20 else n.name[:18] ~ '…' }}</text>
-        <text x="{{ cx }}" y="266" class="node-type">{{ 'Jugador' if n.label == 'Player' else 'Juego' }}</text>
-      </a>
-    {% endfor %}
-  </svg>
-  <p class="muted path-foot">Calculado en Neo4j con <code>shortestPath()</code> sobre las relaciones
-    {{ 'FRIEND_OF' if mode == 'social' else 'FRIEND_OF y PLAYED' }}.</p>
+  <div id="path-network" class="path-network"></div>
+  <p class="muted path-foot">Red de jugadores y amistades guardada en Neo4j. El camino rojo lo calcula <code>shortestPath()</code>
+    sobre {{ 'FRIEND_OF' if mode == 'social' else 'FRIEND_OF y PLAYED' }}. Puedes arrastrar los nodos.</p>
 </section>
+{% endif %}
+{% endblock %}
+
+{% block head %}
+<script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+{% endblock %}
+{% block scripts %}
+{% if result %}
+<script>
+  const net = {{ result.network|tojson }};
+  const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const red = css('--accent') || '#e3122c', blue = css('--n-game') || '#3a8fd6';
+  const nodes = net.nodes.map(n => {
+    if (n.kind === 'game') {
+      return { id: n.id, label: n.label, shape: n.image ? 'circularImage' : 'dot', image: n.image || undefined,
+               size: 34, borderWidth: 4, color: { border: blue, background: blue },
+               font: { color: '#ffffff', size: 18, face: 'system-ui', strokeWidth: 4, strokeColor: '#111' } };
+    }
+    return n.onPath
+      ? { id: n.id, label: n.label, shape: 'dot', size: 30, borderWidth: 4,
+          color: { background: red, border: '#ff7b8a' },
+          font: { color: '#ffffff', size: 20, face: 'system-ui', bold: true, strokeWidth: 4, strokeColor: '#111' } }
+      : { id: n.id, label: n.label, shape: 'dot', size: 16, borderWidth: 2,
+          color: { background: '#2a2a30', border: '#5a5a62' },
+          font: { color: '#9a9aa2', size: 15, face: 'system-ui' } };
+  });
+  const edges = net.edges.map(e => ({
+    from: e.from, to: e.to,
+    label: e.onPath ? (e.type === 'FRIEND_OF' ? 'amigos' : 'jugó') : undefined,
+    width: e.onPath ? 5 : 1.5,
+    dashes: e.type === 'PLAYED',
+    color: { color: e.onPath ? (e.type === 'PLAYED' ? blue : red) : '#3a3a42' },
+    font: { color: '#d0d0d6', size: 14, strokeWidth: 0, background: '#111' },
+    smooth: { type: 'continuous' },
+  }));
+  new vis.Network(document.getElementById('path-network'),
+    { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) },
+    { physics: { barnesHut: { gravitationalConstant: -9000, springLength: 140 }, stabilization: { iterations: 300 } },
+      interaction: { hover: true } });
+</script>
 {% endif %}
 {% endblock %}

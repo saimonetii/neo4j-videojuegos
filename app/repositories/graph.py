@@ -76,6 +76,46 @@ LIMIT 18
 """
 
 
+# Red social completa (jugadores y amistades) para dibujar el camino dentro del grafo
+ALL_PLAYERS = """
+MATCH (p:Player) RETURN p.username AS key, p.name AS name
+"""
+
+ALL_FRIENDSHIPS = """
+MATCH (a:Player)-[:FRIEND_OF]->(b:Player) RETURN a.username AS a, b.username AS b
+"""
+
+
+def path_network(result):
+    """Arma nodos y aristas (formato vis-network) con todo el grafo social
+    y el camino encontrado resaltado."""
+    path_ids = []
+    for n in result["nodes"]:
+        prefix = "P" if n["label"] == "Player" else "G"
+        path_ids.append(f"{prefix}:{n['key']}")
+    path_pairs = {frozenset(pair) for pair in zip(path_ids, path_ids[1:])}
+
+    nodes = {}
+    for row in db.read(ALL_PLAYERS):
+        nid = f"P:{row['key']}"
+        nodes[nid] = {"id": nid, "label": row["name"], "kind": "player", "onPath": nid in path_ids}
+    for n in result["nodes"]:
+        if n["label"] != "Player":
+            nid = f"G:{n['key']}"
+            nodes[nid] = {"id": nid, "label": n["name"], "kind": "game", "onPath": True,
+                          "image": n.get("image")}
+
+    edges = []
+    for row in db.read(ALL_FRIENDSHIPS):
+        a, b = f"P:{row['a']}", f"P:{row['b']}"
+        edges.append({"from": a, "to": b, "type": "FRIEND_OF",
+                      "onPath": frozenset((a, b)) in path_pairs})
+    for (a, b), rel in zip(zip(path_ids, path_ids[1:]), result["rels"]):
+        if rel == "PLAYED":
+            edges.append({"from": a, "to": b, "type": "PLAYED", "onPath": True})
+    return {"nodes": list(nodes.values()), "edges": edges, "path": path_ids}
+
+
 def covers():
     return db.read(COVERS)
 

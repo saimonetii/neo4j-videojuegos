@@ -275,3 +275,8 @@ html, body { overflow-x: hidden; }
 .lg-dot { color: var(--muted); font-size: .85rem; }
 .lg-dot::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
 .lg-dot.pl::before { background: var(--accent); } .lg-dot.gm::before { background: var(--n-game); }
+.path-network { height: 520px; margin-top: 1rem; background: radial-gradient(ellipse at center, #17171b 0%, #0c0c0e 75%);
+                border: 1px solid var(--line); }
+.route { margin: .5rem 0 0; color: var(--muted); }
+.route b { color: var(--text); } .route .arrow { color: var(--accent); margin: 0 .25rem; }
+.lg-dot.other::before { background: #5a5a62; }

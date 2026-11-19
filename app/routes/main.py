@@ -23,6 +23,8 @@ def paths():
             error = "Elige dos jugadores distintos."
         else:
             result = graph.shortest_path(source, target, mode)
+            if result is not None:
+                result["network"] = graph.path_network(result)
             if result is None:
                 error = "No existe un camino entre esos jugadores (dentro del límite de saltos)."
     return render_template("paths.html", players=all_players, source=source,
