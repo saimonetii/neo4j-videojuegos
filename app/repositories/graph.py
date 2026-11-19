@@ -64,6 +64,17 @@ LIMIT 5
 """
 
 
+# Portadas para el muro del inicio y la fila de "más jugados"
+COVERS = """
+MATCH (g:Game) WHERE g.image IS NOT NULL
+OPTIONAL MATCH (g)<-[r:PLAYED]-(:Player)
+WITH g, count(r) AS players
+RETURN g.id AS id, g.title AS title, g.image AS image, players
+ORDER BY players DESC, g.title
+LIMIT 18
+"""
+
+
 def shortest_path(source, target, mode="social"):
     query = SHORTEST_PATH_ANY if mode == "any" else SHORTEST_PATH_SOCIAL
     rows = db.read(query, source=source, target=target)
@@ -94,4 +105,5 @@ def stats():
         "rels": db.read(COUNT_RELS),
         "top_games": db.read(TOP_GAMES),
         "top_genres": db.read(TOP_GENRES),
+        "covers": db.read(COVERS),
     }

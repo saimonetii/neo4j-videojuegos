@@ -1,16 +1,40 @@
 {% extends "base.html" %}
+{% from "_macros.html" import cover %}
 {% block title %}Inicio{% endblock %}
 {% block content %}
-<section class="hero">
-  <h1>Recomendador de videojuegos sobre un grafo</h1>
-  <p>Jugadores, juegos, géneros, plataformas y estudios conectados en Neo4j AuraDB.
-     Las recomendaciones se calculan recorriendo relaciones, no con JOINs.</p>
-  <div class="actions">
-    <a class="btn" href="{{ url_for('players.list_players') }}">Ver jugadores</a>
-    <a class="btn ghost" href="{{ url_for('games.list_games') }}">Explorar juegos</a>
+<section class="hero-wall">
+  <div class="wall" aria-hidden="true">
+    {% for g in stats.covers %}<img src="{{ g.image }}" alt="" loading="eager" referrerpolicy="no-referrer" onerror="this.remove()">{% endfor %}
+  </div>
+  <div class="hero-content">
+    <h1>Descubre tu próximo juego favorito.</h1>
+    <p>Recomendaciones calculadas recorriendo un grafo de jugadores, juegos y amistades
+       guardado en Neo4j AuraDB. Sin JOINs: solo relaciones.</p>
+    <div class="actions center">
+      <a class="btn" href="{{ url_for('players.list_players') }}">Ver jugadores</a>
+      <a class="link-arrow" href="{{ url_for('games.list_games') }}">Explorar todos los juegos</a>
+    </div>
   </div>
 </section>
 
+{% if stats.covers %}
+<section class="strip">
+  <div class="strip-head">
+    <h2 class="section-title">Los más jugados</h2>
+    <a class="link-arrow" href="{{ url_for('games.list_games') }}">Ver todos</a>
+  </div>
+  <div class="strip-row">
+    {% for g in stats.covers[:10] %}
+      <a class="tile" href="{{ url_for('games.detail', game_id=g.id) }}">
+        {{ cover(g.title, g.image) }}
+        <span class="tile-title">{{ g.title }}<small>{{ g.players }} jugador(es)</small></span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<h2 class="section-title center">La base en números</h2>
 <div class="grid two">
   <section class="card">
     <h2>Nodos en la base</h2>

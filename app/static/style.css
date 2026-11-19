@@ -1,5 +1,12 @@
 /* Temas: se elige con el selector de la barra superior (data-theme en <html>) */
-:root, [data-theme="consola"] {
+:root, [data-theme="nube"] {
+  --bg: #000000; --glow: #000000; --panel: #111111; --panel-2: #1c1c1c; --line: #2b2b2b;
+  --text: #ffffff; --muted: #a7a7a7; --accent: #76b900; --accent-2: #8fd400; --on-accent: #000;
+  --link: #8fd400; --ok: #76b900; --err: #ff5a5a; --star: #76b900; --star-off: #333;
+  --n-me: #76b900; --n-player: #c8c8c8; --n-game: #3a8fd6; --n-genre: #f2c94c;
+  --font: "Arial", "Helvetica Neue", Helvetica, system-ui, sans-serif; --radius: 2px;
+}
+[data-theme="consola"] {
   --bg: #111113; --glow: #3b0d10; --panel: #1b1b1f; --panel-2: #26262c; --line: #33333b;
   --text: #f4f4f5; --muted: #a1a1aa; --accent: #e11d2a; --accent-2: #f59e0b; --on-accent: #fff;
   --link: #fb7185; --ok: #22c55e; --err: #ef4444; --star: #fbbf24; --star-off: #3f3f46;
@@ -144,3 +151,53 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); bo
 
 .theme-picker { margin-left: 1.4rem; padding: .3rem .5rem; font-size: .8rem; }
 .topbar nav { display: flex; align-items: center; flex-wrap: wrap; }
+
+/* ------------------------------------------------------------------ */
+/* Estilo "nube": negro, verde, esquinas rectas y muro de portadas     */
+/* ------------------------------------------------------------------ */
+h1, h2, h3, .brand { letter-spacing: -.01em; }
+.btn { border-radius: var(--radius); padding: .7rem 1.3rem; }
+.btn.ghost { border: 2px solid var(--accent); color: var(--text); }
+.btn.ghost:hover { background: var(--accent); color: var(--on-accent); }
+.link-arrow { color: var(--text); font-weight: 700; font-size: .9rem; }
+.link-arrow::after { content: " ›"; color: var(--accent); font-size: 1.1em; }
+.link-arrow:hover { color: var(--accent); text-decoration: none; }
+.actions.center { justify-content: center; gap: 1.4rem; }
+.section-title { font-size: 1.6rem; font-weight: 800; margin: 2.2rem 0 1rem; }
+.section-title.center { text-align: center; }
+.topbar nav a:hover { color: var(--accent); }
+.card { border-radius: var(--radius); }
+.rec { border-top-color: var(--accent); }
+
+/* Muro de portadas del inicio */
+.hero-wall { position: relative; width: 100vw; margin-left: calc(50% - 50vw); margin-top: -1.5rem;
+             min-height: 520px; display: grid; place-items: center; overflow: hidden; }
+.wall { position: absolute; inset: -40px; display: grid; grid-template-columns: repeat(6, 1fr);
+        gap: 10px; transform: rotate(-4deg) scale(1.08); opacity: .62; }
+.wall img { width: 100%; aspect-ratio: 460 / 215; object-fit: cover; display: block; }
+.hero-wall::after { content: ""; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--bg) 50%, transparent) 0%, var(--bg) 82%),
+              linear-gradient(to bottom, transparent 60%, var(--bg)); }
+.hero-content { position: relative; z-index: 1; text-align: center; max-width: 720px; padding: 3rem 1.5rem; }
+.hero-content h1 { font-size: clamp(2rem, 4.5vw, 3.2rem); font-weight: 800; line-height: 1.1; margin-bottom: 1rem; }
+.hero-content p { color: var(--muted); font-size: 1.1rem; line-height: 1.6; margin: 0 auto 1.8rem; }
+
+/* Fila horizontal de juegos */
+.strip-head { display: flex; justify-content: space-between; align-items: baseline; }
+.strip-row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(240px, 1fr);
+             gap: 12px; overflow-x: auto; padding-bottom: .6rem; scroll-snap-type: x mandatory; }
+.tile { position: relative; display: block; color: var(--text); scroll-snap-align: start;
+        border: 2px solid transparent; transition: border-color .15s, transform .15s; }
+.tile:hover { border-color: var(--accent); transform: translateY(-3px); text-decoration: none; }
+.tile .cover { border-radius: 0; }
+.tile-title { position: absolute; left: 0; right: 0; bottom: 0; padding: 1.4rem .7rem .55rem; font-weight: 700;
+              font-size: .9rem; background: linear-gradient(to top, rgba(0,0,0,.92), transparent); }
+.tile-title small { display: block; font-weight: 400; color: #cfcfcf; font-size: .75rem; }
+
+/* Tarjetas de la lista de juegos: portada a todo lo ancho */
+.game { padding: 0; overflow: hidden; border-radius: var(--radius); gap: 0; }
+.game .cover { border-radius: 0; }
+.game .info { padding: .7rem .8rem .9rem; }
+.game:hover { border-color: var(--accent); }
+.cover.banner { border-radius: var(--radius); }
+@media (max-width: 700px) { .wall { grid-template-columns: repeat(3, 1fr); } }
